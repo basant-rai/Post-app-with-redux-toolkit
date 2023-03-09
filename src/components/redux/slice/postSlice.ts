@@ -1,5 +1,6 @@
 import { createSlice, nanoid, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
+import { sub } from "date-fns"
 import { AddPost, IPost, Reaction } from "../../../entities/IPost"
 import { RootState } from "../Store"
 
@@ -14,8 +15,17 @@ export const fetchPosts = createAsyncThunk('posts/fetchpost', async () => {
   }
 })
 
-export const addNewPost = createAsyncThunk('post/addPost', async (initialPost: AddPost) => {
+export const getPostById = createAsyncThunk('post/getPost', async (id: number) => {
 
+  try {
+    const res = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`)
+    return res.data;
+  } catch (err: any) {
+    return err.res.data.message
+  }
+})
+
+export const addNewPost = createAsyncThunk('post/addPost', async (initialPost: AddPost) => {
   try {
     const res = await axios.post(api_url, initialPost)
     return res.data;
@@ -47,6 +57,7 @@ export const addNewPost = createAsyncThunk('post/addPost', async (initialPost: A
 
 const initialPost = {
   posts: [] as IPost[],
+  post: {} as IPost,
   status: 'idle',
   error: null
 }
@@ -59,13 +70,14 @@ export const postSlice = createSlice({
       reducer(state, action: PayloadAction<IPost>) {
         state.posts.push(action.payload)
       },
-      prepare: (title: string, body: string, userId: number, reactions: Reaction) => {
+      prepare: (title: string, body: string, userId: number, reactions: Reaction,date:string) => {
         return {
           payload: {
             id: nanoid(),
             userId,
             title,
             body,
+            date,
             reactions: {
               thumbsUp: 0,
               wow: 0,
@@ -84,6 +96,7 @@ export const postSlice = createSlice({
         checkPost.reactions[reaction]++
       }
     }
+
   },
   extraReducers(builder) {
     builder
@@ -93,9 +106,9 @@ export const postSlice = createSlice({
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded'
         // Adding date and reactions
-        // let min = 1;
+        let min = 1;
         const loadedPosts = action.payload.map((post: any) => {
-          // post.date = su(new Date(), { minutes: min++ }).toISOString();
+          post.date = sub(new Date(), { minutes: min++ }).toISOString();
           post.reactions = {
             thumbsUp: 0,
             wow: 0,
@@ -113,7 +126,15 @@ export const postSlice = createSlice({
         // state.error = action.error.message
       })
       .addCase(addNewPost.fulfilled, (state, action) => {
-        console.log(action.payload)
+        state.status = 'succeeded'
+
+        const sortedPosts = state.posts.sort((a, b) => {
+          if (a.id > b.id) return 1
+          if (a.id < b.id) return -1
+          return 0
+        })
+
+        action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
         action.payload.userId = Number(action.payload.userId)
         action.payload.date = new Date().toISOString();
         action.payload.reactions = {
@@ -125,11 +146,20 @@ export const postSlice = createSlice({
         }
         state.posts.push(action.payload)
       })
+      .addCase(getPostById.fulfilled, (state, action) => {
+        const id_post = action.payload
+        const new_state = { ...state, post: { ...state.post, ...id_post } }
+        return new_state
+
+      })
   }
 })
 
 export const allPosts = (state: RootState) => state.posts.posts
+export const post = (state: RootState) => state.posts.post
+
 export const getPostsStatus = (state: RootState) => state.posts.status;
 export const getPostsError = (state: RootState) => state.posts.error;
+// export const getPostById=(state:RootState)=>state.posts.
 export const { addPost, reactionAdd } = postSlice.actions
 export default postSlice.reducer

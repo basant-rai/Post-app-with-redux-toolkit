@@ -15,8 +15,8 @@ const User = ({ userId }: Props) => {
   const author = user.find((a) => a.id === userId)
   return (
     <div>
-      <p className='text-lg'>
-        author:&nbsp;
+      <p className='text-lg text-white'>
+        Posted by:&nbsp;
         <span className='text-indigo-300'>
           {author?.username}</span>
       </p>

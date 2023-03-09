@@ -24,8 +24,9 @@ const AddPost = () => {
   }, [body, dispatch, title, userId])
 
   return (
-    <div className='p-5'>
-      <div className=' space-y-5' >
+    <div className='p-5 w-1/2 mx-auto'>
+      <h1 className='text-white font-bold text-5xl py-5 text-center'>Add new post</h1>
+      <div className=' space-y-5 text-white' >
         <div>
           Title
           <input
@@ -37,7 +38,7 @@ const AddPost = () => {
         <div>
           <label>
             Content
-            <textarea 
+            <textarea
               value={body}
               onChange={e => setBody(e.target.value)}
               className='w-full h-48  px-2 rounded text-black' />
@@ -46,8 +47,9 @@ const AddPost = () => {
         <div>
           <label>
             post by:
-            
-            <select id="postAuthor" onChange={(e) => {setUserId(e.target.value);console.log(e.target.value);
+
+            <select id="postAuthor" onChange={(e) => {
+              setUserId(e.target.value); console.log(e.target.value);
             }} className='w-full py-2 bg-white border-white text-black'>
               {
                 users.map((u) =>

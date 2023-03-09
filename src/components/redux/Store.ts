@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../api/apiSlice";
+import  commentSlice from "./slice/commentSlice";
 import postSlice from "./slice/postSlice";
 import userSlice from "./slice/userSlice";
 
@@ -7,7 +8,8 @@ export const store = configureStore({
   reducer:{
     [apiSlice.reducerPath]:apiSlice.reducer,
     posts:postSlice,
-    users:userSlice
+    users:userSlice,
+    comments:commentSlice
   },
   middleware:getDefaultMiddleware=>
     getDefaultMiddleware().concat(apiSlice.middleware),

@@ -4,6 +4,7 @@ export interface IPost {
   title: string
   body: string
   reactions: Reaction
+  date:string
 }
 
 export interface AddPost{
