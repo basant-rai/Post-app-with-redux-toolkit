@@ -7,6 +7,8 @@ import NavBar from './components/layout/NavBar';
 import Users from './components/page/Users';
 import SinglePost from './components/page/SinglePost';
 import AddPost from './components/page/AddPost';
+import NivoPage from './components/page/NivoPage';
+import Barchart from './components/page/Barchart';
 
 function App() {
   store.dispatch(fetchUser());
@@ -21,6 +23,8 @@ function App() {
             <Route path="/users" element={<Users />} />
             <Route path="/post/:id" element={<SinglePost />} />
             <Route path="/addpost" element={<AddPost />} />
+            <Route path="/barchart" element={<Barchart />} />
+
           </Routes>
         </BrowserRouter>
       </Provider>
